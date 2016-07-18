@@ -22,7 +22,7 @@ def write_coordinates(s):
 
     if data:
         last = Point.objects.last()
-        if not last or (last.lat != data['lat'] and last.lng != data['lng']):
+        if not last or (last.lat != data['lat'] or last.lng != data['lng']):
             print 'Coordinates for point are: %s' % data
             Point.objects.create(lat=data['lat'], lng=data['lng'])
 
@@ -33,6 +33,7 @@ sock.listen(1)
 while True:
     conn, addr = sock.accept()
     data = conn.recv(4096)
+    print 'Received data is: %s' % data
     write_coordinates(data)
     if not data: break
     conn.close()
