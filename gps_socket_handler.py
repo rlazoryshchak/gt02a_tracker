@@ -1,10 +1,12 @@
 import socket, os, django, re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gt02a_tracker.settings")
 django.setup()
 
 from tracker.models import Point
+
+HOURS = 3
 
 def write_coordinates(s):
     n_pattern = re.compile('(?<=A)[\d\.]+(?=N)')
@@ -21,7 +23,7 @@ def write_coordinates(s):
 
         date = date_pattern.findall(s)[0]
         time = time_pattern.findall(s)[0]
-        created_at = datetime.strptime(date + time, '%y%m%d%H%M%S')
+        created_at = datetime.strptime(date + time, '%y%m%d%H%M%S') + timedelta(hours=HOURS)
 
         data = {'lat': round(lat, 4), 'lng': round(lng, 4), 'created_at': created_at}
     except IndexError:
