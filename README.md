@@ -9,7 +9,7 @@
 - `cd gt02a_tracker`
 - `python manage.py migrate`
 - `python manage.py createsuperuser`
-- `python manage.py runserver --noreload`
+- `python manage.py runserver 0.0.0.0:8000 --noreload`
 
 ### Demo coordinates:
 - open new terminal tab and simulate gsp tracker socket request `python gps_socket_sender.py`
