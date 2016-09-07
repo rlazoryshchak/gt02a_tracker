@@ -32,7 +32,8 @@ def write_coordinates(s):
     if data:
         last = Point.objects.last()
         if not last or (last.lat != data['lat'] or last.lng != data['lng']):
-            print 'Coordinates for point are: %s' % data
+            with open('log', 'a+') as log:
+                log.write('Coordinates for point are: %s\n' % data)
             Point.objects.create(lat=data['lat'], lng=data['lng'], created_at=data['created_at'])
 
 sock = socket.socket()
@@ -42,7 +43,8 @@ sock.listen(1)
 while True:
     conn, addr = sock.accept()
     data = conn.recv(4096)
-    print 'Received data is: %s' % data
+    with open('log', 'a+') as log:
+        log.write('Received data is: %s\n' % data)
     write_coordinates(data)
     if not data: break
     conn.close()
