@@ -19,12 +19,12 @@
 <script>
   L.mapbox.accessToken = '{{ token }}';
   var map = L.mapbox.map('map', 'mapbox.streets')
-      .setView([49.7887, 24.0565], 17);
+      .setView([{{ points.1.lat}}, {{points.1.lng}}], 15);
   
   var line_points = [];
   {% for p in points %}
     line_points.push([{{p.lat}}, {{p.lng}}])
-    L.marker([{{p.lat}}, {{p.lng}}]).addTo(map);
+    // L.marker([{{p.lat}}, {{p.lng}}]).addTo(map);
   {% endfor %}
 
   var polyline_options = {
