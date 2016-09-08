@@ -1,6 +1,5 @@
 import socket, os, django, re
 from datetime import datetime, timedelta
-from mapbox import MapMatcher
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gt02a_tracker.settings")
 django.setup()
