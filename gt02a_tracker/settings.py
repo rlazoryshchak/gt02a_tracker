@@ -121,4 +121,4 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 
-GOOGLE_KEY = 'AIzaSyC1XSJM3YKpufYL1V3TIVT4jpAx9xKBzq8'
+os.environ.setdefault("MAPBOX_ACCESS_TOKEN", 'pk.eyJ1IjoiYmF0eWFyIiwiYSI6ImNpc3UxNzU1ZzAwMG8yeGxnYXdvcDExcHQifQ.GqOPMQuCLpH8vC1lc3uPyg')

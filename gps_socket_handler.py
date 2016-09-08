@@ -1,5 +1,6 @@
-import socket, os, django, re
+import socket, os, django, re, json
 from datetime import datetime, timedelta
+from mapbox import MapMatcher
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gt02a_tracker.settings")
 django.setup()
@@ -25,16 +26,37 @@ def write_coordinates(s):
         time = time_pattern.findall(s)[0]
         created_at = datetime.strptime(date + time, '%y%m%d%H%M%S') + timedelta(hours=HOURS)
 
-        data = {'lat': round(lat, 4), 'lng': round(lng, 4), 'created_at': created_at}
+        received_point = {'lat': round(lat, 4), 'lng': round(lng, 4), 'created_at': created_at}
     except IndexError:
-        data = None
+        received_point = None
 
-    if data:
+    if received_point:
         last = Point.objects.last()
-        if not last or (last.lat != data['lat'] or last.lng != data['lng']):
-            with open('log', 'a+') as log:
-                log.write('Coordinates for point are: %s\n' % data)
-            Point.objects.create(lat=data['lat'], lng=data['lng'], created_at=data['created_at'])
+        if not last:
+            Point.objects.create(lat=received_point['lat'], lng=received_point['lng'], created_at=received_point['created_at'])
+        else:
+            if last.created_at < received_point['created_at'] - timedelta(seconds=30):
+                try:
+                    point = snap_to_road(last, received_point)
+                    with open('log', 'a+') as log:
+                        log.write('Coordinates for point are: %s\n' % received_point)
+                    Point.objects.create(lat=point['lat'], lng=point['lng'], created_at=point['created_at'])
+                except IndexError:
+                    return None
+
+def snap_to_road(last_point, received_point):
+    service = MapMatcher()
+    line = {
+        "type": "Feature",
+        "geometry": {
+            "type": "LineString",
+            "coordinates": [[last_point.lng, last_point.lat], [received_point['lng'], received_point['lat']]]
+        }    
+    }
+    response = service.match(line, profile='mapbox.driving')
+    coordinates = json.loads(response.text)['features'][0]['properties']['matchedPoints'][-1]
+    return {'lat': coordinates[1], 'lng': coordinates[0], 'created_at': received_point['created_at']}
+
 
 sock = socket.socket()
 sock.bind(('', 8821))
