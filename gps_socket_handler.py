@@ -13,6 +13,7 @@ def write_coordinates(s):
     e_pattern = re.compile('(?<=N)[\d\.]+(?=E)')
     date_pattern = re.compile('(?<=BR[\d]{2})[\d]+(?=A)')
     time_pattern = re.compile('(?<=E[\d\.]{5})[\d]{6}')
+    speed_pattern = re.compile('(?<=E)[\d]{3}')
 
     try:
         n = float(n_pattern.findall(s)[0])
@@ -25,16 +26,20 @@ def write_coordinates(s):
         time = time_pattern.findall(s)[0]
         created_at = datetime.strptime(date + time, '%y%m%d%H%M%S') + timedelta(hours=HOURS)
 
+        speed = int(speed_pattern.findall(s)[0])
+
         point = {'lat': round(lat, 4), 'lng': round(lng, 4), 'created_at': created_at}
     except IndexError:
         return None
 
     last = Point.objects.last()
-    if not last or last.created_at < point['created_at'] - timedelta(seconds=30):
+    regular_record = last.created_at < point['created_at'] - timedelta(minutes=20)
+    if not last or regular_record or speed > 0:
         created_point = Point.objects.create(lat=point['lat'], lng=point['lng'], created_at=point['created_at'])
         updated_point = Point.snap_to_road(created_point)
         with open('log', 'a+') as log:
-            log.write('Coordinates for point are: %s\n' % [updated_point.lat, updated_point.lng])
+            log_point = [updated_point.lat, updated_point.lng, updated_point.created_at.strftime("%Y-%m-%d %H:%M:%S")]
+            log.write('Coordinates for point are: %s\n' % log_point)
                     
 
 
