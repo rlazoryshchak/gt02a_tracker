@@ -33,7 +33,8 @@ def write_coordinates(s):
         return None
 
     last = Point.objects.last()
-    regular_record = last.created_at < point['created_at'] - timedelta(minutes=20)
+    if last:
+        regular_record = last.created_at < point['created_at'] - timedelta(minutes=20)
     if not last or regular_record or speed > 0:
         created_point = Point.objects.create(lat=point['lat'], lng=point['lng'], created_at=point['created_at'])
         updated_point = Point.snap_to_road(created_point)
@@ -41,8 +42,6 @@ def write_coordinates(s):
             log_point = [updated_point.lat, updated_point.lng, updated_point.created_at.strftime("%Y-%m-%d %H:%M:%S")]
             log.write('Coordinates for point are: %s\n' % log_point)
                     
-
-
 sock = socket.socket()
 sock.bind(('', 8821))
 sock.listen(1)
