@@ -18,20 +18,26 @@
 
 <script>
   L.mapbox.accessToken = '{{ token }}';
-  var map = L.mapbox.map('map', 'mapbox.streets')
-      .setView([{{ points.1.lat}}, {{points.1.lng}}], 15);
+  var map = L.mapbox.map('map', 'mapbox.streets').setView([49.7887, 24.0565], 17);
   
+
   var line_points = [];
   {% for p in points %}
-    line_points.push([{{p.lat}}, {{p.lng}}])
-    // L.marker([{{p.lat}}, {{p.lng}}]).addTo(map);
+    // line_points.push([{{p.lat}}, {{p.lng}}])
+    var icon = L.mapbox.marker.icon({
+        'marker-size': 'medium',
+        'marker-symbol': '{{p.created_at.hour}}',
+        'marker-color': '#3bb2d0'
+    })
+    var time = '{{p.created_at.hour}}:{{p.created_at.minute}}:{{p.created_at.second}}'
+    L.marker([{{p.lat}}, {{p.lng}}], {icon: icon}).bindPopup(time).addTo(map);
   {% endfor %}
 
-  var polyline_options = {
-      color: '#000'
-  };
+  // var polyline_options = {
+  //     color: '#000'
+  // };
 
-  var polyline = L.polyline(line_points, polyline_options).addTo(map);
+  // var polyline = L.polyline(line_points, polyline_options).addTo(map);
 </script>
 
 
