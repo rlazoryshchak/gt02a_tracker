@@ -30,7 +30,7 @@ def write_coordinates(s):
         return None
 
     last = Point.objects.last()
-    if last.created_at < point['created_at'] - timedelta(seconds=30):
+    if not last or last.created_at < point['created_at'] - timedelta(seconds=30):
         created_point = Point.objects.create(lat=point['lat'], lng=point['lng'], created_at=point['created_at'])
         updated_point = Point.snap_to_road(created_point)
         with open('log', 'a+') as log:
