@@ -20,4 +20,4 @@
 
 ![alt text][logo]
 
-[logo]: https://github.com/rlazoryshchak/gt02a_tracker/blob/master/demo.png 'Demo'
+[logo]: https://github.com/rlazoryshchak/gt02a_tracker/blob/master/demo1.png 'Demo'
